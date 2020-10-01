@@ -1,6 +1,14 @@
+<%- include('partials/header') %>
+
+<h1> This is Campgrounds Page</h1>
+
+<a href="/campgrounds/new">Add New Capground</a>
+
 <% campgrounds.forEach(function(cg){ %>
     <div>
         <h4><%=cg.name%></h4>
         <img src ="<%=cg.image%>">
     </div>
 <% }) %>
+
+<%- include('partials/footer') %>
