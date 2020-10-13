@@ -1,33 +1,36 @@
 let express = require("express");
 let app = express();
-
+let mongoose = require("mongoose");
 app.set("view engine","ejs");
+
+mongoose.connect("mongodb://localhost/camppost");
 
 let bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended:true}));
+
+let campgroundSchema = new mongoose.Schema({
+    name: String,
+    image: String
+});
+
+let Campground = mongoose.model("Campground",campgroundSchema);
+
 
 app.get("/",function(req,res){
     res.render("landing");
 });
 
-let campgrounds = [
-    { 
-        name: "Salmon Creek",
-        image:"https://images.pexels.com/photos/776117/pexels-photo-776117.jpeg?auto=compress&cs=tinysrgb&h=350"
-    },
-    { 
-        name: "Granite Hill",
-        image:"https://images.pexels.com/photos/699558/pexels-photo-699558.jpeg?auto=compress&cs=tinysrgb&h=350"
-    },
-    { 
-        name: "Pink Floyd",
-        image:"https://images.pexels.com/photos/45241/tent-camp-night-star-45241.jpeg?auto=compress&cs=tinysrgb&h=350"
-    },
-];
 
 app.get("/campgrounds",function(req,res){
+    //get all campgrounds from db
+    Campground.find({},function(err,camps){
+        if(err){
+            console.log(err);
+        }else{
+            res.render("campgrounds",{campgrounds:camps});
+        }
+    })
     
-    res.render("campgrounds",{campgrounds:campgrounds});
 });
 
 
@@ -35,8 +38,18 @@ app.post("/campgrounds",function(req,res){
     let name = req.body.name;
     let image = req.body.image;
     let newCampground = {name:name,image:image};
-    campgrounds.push(newCampground);
-    res.redirect("/campgrounds");
+    Campground.create(
+        newCampground
+        ,function(err,camps){
+            if(err){
+                console.log("ERROR");
+                console.log(err);
+            }else{
+                res.redirect("/campgrounds");
+            }
+        }
+    );
+   
 });
 
 app.get("/campgrounds/new",function(req,res){
