@@ -2,19 +2,14 @@ let express = require("express");
 let app = express();
 let mongoose = require("mongoose");
 app.set("view engine","ejs");
+let Campground = require("./models/campground");
+// let Comment = require("./models/comment");
 
 mongoose.connect("mongodb://localhost/camppost",{ useNewUrlParser: true, useUnifiedTopology: true});
 
 let bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended:true}));
 
-let campgroundSchema = new mongoose.Schema({
-    name: String,
-    image: String,
-    description: String,
-});
-
-let Campground = mongoose.model("Campground",campgroundSchema);
 
 
 app.get("/",function(req,res){
